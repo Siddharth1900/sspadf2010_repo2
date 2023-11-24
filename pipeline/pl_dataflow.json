@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "Cast",
+						"referenceName": "Conditional_split",
 						"type": "DataFlowReference"
 					},
 					"compute": {
