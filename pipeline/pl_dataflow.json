@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "Conditional_split",
+						"referenceName": "Assert",
 						"type": "DataFlowReference"
 					},
 					"compute": {
