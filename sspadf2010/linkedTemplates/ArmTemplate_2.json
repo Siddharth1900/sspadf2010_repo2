@@ -1,0 +1,1719 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "sspadf2010"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_salesempcsv')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_adlsgen2410",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "salesemployee.csv",
+						"fileSystem": "input"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "EmpID",
+						"type": "String"
+					},
+					{
+						"name": "EmpName",
+						"type": "String"
+					},
+					{
+						"name": "DeptID",
+						"type": "String"
+					},
+					{
+						"name": "Salary",
+						"type": "String"
+					},
+					{
+						"name": "Bonus",
+						"type": "String"
+					},
+					{
+						"name": "Gender",
+						"type": "String"
+					},
+					{
+						"name": "Country",
+						"type": "String"
+					},
+					{
+						"name": "City",
+						"type": "String"
+					},
+					{
+						"name": "DOJ",
+						"type": "String"
+					},
+					{
+						"name": "Company",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_sinkoutput2_csv')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_adlsgen2_2510",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "output2"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_sinkoutput3')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_adlsgen2_2510",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "output3"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "DeptID",
+						"type": "String"
+					},
+					{
+						"name": "DeptName",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_sinkoutput_csv')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_adlsgen2_2510",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "output"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_unpivot')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_adlsgen2410",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "Unpivot_CSV.csv",
+						"fileSystem": "input"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "PO",
+						"type": "String"
+					},
+					{
+						"name": "Vendor",
+						"type": "String"
+					},
+					{
+						"name": "Apple",
+						"type": "String"
+					},
+					{
+						"name": "Pear",
+						"type": "String"
+					},
+					{
+						"name": "Orange",
+						"type": "String"
+					},
+					{
+						"name": "Mango",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Inline Dataset')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"linkedService": {
+								"referenceName": "ls_adlsgen2410",
+								"type": "LinkedServiceReference"
+							},
+							"name": "EmpSrc"
+						}
+					],
+					"sinks": [
+						{
+							"linkedService": {
+								"referenceName": "ls_adlsgen2_2510",
+								"type": "LinkedServiceReference"
+							},
+							"name": "InlineSink"
+						}
+					],
+					"transformations": [],
+					"scriptLines": [
+						"source(output(",
+						"          CustomerID as long,",
+						"          CustomerName as string,",
+						"          Location as string,",
+						"          Salary as long,",
+						"          Deptid as long",
+						"     ),",
+						"     useSchema: false,",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     inferDriftedColumnTypes: true,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'delimited',",
+						"     fileSystem: 'testinput',",
+						"     folderPath: 'Test1111/dir1',",
+						"     fileName: 'Customers.csv',",
+						"     columnDelimiter: ',',",
+						"     escapeChar: '\\\\',",
+						"     quoteChar: '\\\"',",
+						"     columnNamesAsHeader: true,",
+						"     dateFormats: ['MM/dd/yyyy'],",
+						"     preferredIntegralType: 'short',",
+						"     preferredFractionalType: 'double',",
+						"     booleanFormat: ['True', 'False']) ~> EmpSrc",
+						"EmpSrc sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'delimited',",
+						"     fileSystem: 'output3010container',",
+						"     folderPath: 'cust.csv',",
+						"     columnDelimiter: ',',",
+						"     escapeChar: '\\\\',",
+						"     quoteChar: '\\\"',",
+						"     columnNamesAsHeader: true,",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          CustomerID,",
+						"          CustomerName,",
+						"          Location,",
+						"          Salary,",
+						"          Deptid",
+						"     )) ~> InlineSink"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Delete files older than  3 minutes')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Please input a folder path as the parameter for this pipeline, and the pipeline will delete files which were last modified more than 3 minutes ago under the particular folder path.",
+				"activities": [
+					{
+						"name": "DeleteFiles",
+						"description": "Connect to your storage account to save the log file.",
+						"type": "Delete",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "BinaryDatasetForDeleteActivity",
+								"type": "DatasetReference",
+								"parameters": {
+									"FolderPath": {
+										"value": "@pipeline().parameters.SourceFolder",
+										"type": "Expression"
+									},
+									"Directory": {
+										"value": "@pipeline().parameters.SourceDirectory",
+										"type": "Expression"
+									}
+								}
+							},
+							"logStorageSettings": {
+								"linkedServiceName": {
+									"referenceName": "ls_adlsgen2410",
+									"type": "LinkedServiceReference"
+								},
+								"path": {
+									"value": "@pipeline().parameters.LoggingPath",
+									"type": "Expression"
+								}
+							},
+							"enableLogging": true,
+							"storeSettings": {
+								"type": "AzureBlobFSReadSettings",
+								"recursive": true,
+								"modifiedDatetimeEnd": {
+									"value": "@{addMinutes(pipeline().TriggerTime, -3)}",
+									"type": "Expression"
+								},
+								"wildcardFileName": "*"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"SourceFolder": {
+						"type": "string",
+						"defaultValue": "sourcefolder"
+					},
+					"SourceDirectory": {
+						"type": "string",
+						"defaultValue": "subfolder"
+					},
+					"LoggingPath": {
+						"type": "string",
+						"defaultValue": "loggingfolder/subfolder"
+					}
+				},
+				"annotations": [
+					"PL Template"
+				],
+				"lastPublishTime": "2023-10-28T18:28:20Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SessionLog_in_CopyActivity')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "BinarySource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"wildcardFileName": "*.csv",
+									"deleteFilesAfterCompletion": false
+								},
+								"formatSettings": {
+									"type": "BinaryReadSettings"
+								}
+							},
+							"sink": {
+								"type": "BinarySink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings",
+									"copyBehavior": "PreserveHierarchy"
+								}
+							},
+							"enableStaging": false,
+							"skipErrorFile": {
+								"fileMissing": false
+							},
+							"logSettings": {
+								"enableCopyActivityLog": true,
+								"copyActivityLogSettings": {
+									"logLevel": "Info",
+									"enableReliableLogging": true
+								},
+								"logLocationSettings": {
+									"linkedServiceName": {
+										"referenceName": "AzureBlobStorage1",
+										"type": "LinkedServiceReference"
+									},
+									"path": "loginfo"
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_binary_blob_input",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_adlsgen2_output3",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-11-03T16:15:42Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl-GlobalParameter')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "BinarySource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true
+								},
+								"formatSettings": {
+									"type": "BinaryReadSettings"
+								}
+							},
+							"sink": {
+								"type": "BinarySink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings",
+									"copyBehavior": "PreserveHierarchy"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_inputbinary3010",
+								"type": "DatasetReference",
+								"parameters": {
+									"Filename": {
+										"value": "@pipeline().parameters.Filename",
+										"type": "Expression"
+									},
+									"Rootpath": {
+										"value": "@pipeline().globalParameters.Rootpath_gp",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_outputbinary3010",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"Filename": {
+						"type": "string"
+					},
+					"RootPath": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-10-30T15:41:49Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_JsonReadingexample')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Get Metadata1",
+						"type": "GetMetadata",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "ds_folderreadingmetadata",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"fieldList": [
+								"exists"
+							],
+							"storeSettings": {
+								"type": "AzureBlobFSReadSettings",
+								"recursive": true,
+								"enablePartitionDiscovery": false
+							},
+							"formatSettings": {
+								"type": "BinaryReadSettings"
+							}
+						}
+					},
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Get Metadata1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Get Metadata1').output.childItems",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "Set variable1",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "File_Name",
+										"value": {
+											"value": "@item().name",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"variables": {
+					"File_Name": {
+						"type": "String"
+					}
+				},
+				"annotations": [
+					"Pipeline"
+				],
+				"lastPublishTime": "2023-10-28T17:58:04Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AlterRow')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_inputemp_sample",
+								"type": "DatasetReference"
+							},
+							"name": "emp"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_alterrow_azuresqldb",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "alterRow1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          EmpID as short,",
+						"          EmpName as string,",
+						"          DeptID as short,",
+						"          Salary as short,",
+						"          Bonus as short,",
+						"          Gender as string,",
+						"          Country as string,",
+						"          City as string,",
+						"          DOJ as string,",
+						"          Company as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     inferDriftedColumnTypes: true,",
+						"     ignoreNoFilesFound: false) ~> emp",
+						"emp alterRow(insertIf(DeptID==20),",
+						"     updateIf(DeptID==30),",
+						"     deleteIf(DeptID==50),",
+						"     upsertIf(DeptID==40)) ~> alterRow1",
+						"alterRow1 sink(allowSchemaDrift: true,",
+						"     validateSchema: true,",
+						"     input(",
+						"          EmpID as integer,",
+						"          EmpName as string,",
+						"          DeptID as long,",
+						"          Salary as long,",
+						"          Bonus as long,",
+						"          Gender as string,",
+						"          Country as string,",
+						"          City as string,",
+						"          DOJ as date,",
+						"          Company as string",
+						"     ),",
+						"     deletable:true,",
+						"     insertable:true,",
+						"     updateable:true,",
+						"     upsertable:true,",
+						"     keys:['EmpID'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          EmpID,",
+						"          EmpName,",
+						"          DeptID,",
+						"          Salary,",
+						"          Bonus,",
+						"          Gender,",
+						"          Country,",
+						"          City,",
+						"          DOJ,",
+						"          Company",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Assert')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_assertinputcsv",
+								"type": "DatasetReference"
+							},
+							"name": "empsrc"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_deptassertcsv_Input",
+								"type": "DatasetReference"
+							},
+							"name": "Deptsrc"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_sinkoutput3",
+								"type": "DatasetReference"
+							},
+							"name": "goodrecords"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sinkoutput3",
+								"type": "DatasetReference"
+							},
+							"name": "badrecords"
+						}
+					],
+					"transformations": [
+						{
+							"name": "assert1"
+						},
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "split1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          EmpID as short,",
+						"          EmpName as string,",
+						"          DeptID as short,",
+						"          Salary as short,",
+						"          Bonus as short,",
+						"          Gender as string,",
+						"          City as string,",
+						"          DOJ as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     inferDriftedColumnTypes: true,",
+						"     ignoreNoFilesFound: false) ~> empsrc",
+						"source(output(",
+						"          DeptID as short,",
+						"          DeptName as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     inferDriftedColumnTypes: true,",
+						"     ignoreNoFilesFound: false) ~> Deptsrc",
+						"empsrc, Deptsrc assert(expectTrue(!isNull(toDate(DOJ,'MM/dd/yyyy')), false, 'assert_DOJ', null, 'Checking DOJ Data type Format'),",
+						"     expectUnique(EmpID, false, 'assert_empid', null, 'Checking Unique EmpID'),",
+						"     expectExists(Deptsrc@DeptID == empsrc@DeptID, false, 'assert_deptExists', null, 'Checking DeptId on Both Tables'),",
+						"     expectTrue(!isNull(Bonus), false, 'assert_BonusEmpty', null, 'Checking bonus is null')) ~> assert1",
+						"assert1 derive(Is_ErrorRow = isError(),",
+						"          Is_IncorrectDeptRow = hasError('assert_deptExists'),",
+						"          asserterrormessage = assertErrorMessages()) ~> derivedColumn1",
+						"derivedColumn1 split(Is_ErrorRow==false(),",
+						"     disjoint: false) ~> split1@(GoodRecords, BadRecords)",
+						"split1@GoodRecords sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          DeptID as string,",
+						"          DeptName as string",
+						"     ),",
+						"     partitionFileNames:['Goodrecords_Assert.csv'],",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> goodrecords",
+						"split1@BadRecords sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          DeptID as string,",
+						"          DeptName as string",
+						"     ),",
+						"     partitionFileNames:['Badrecords_Assert.csv'],",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> badrecords"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_sinkoutput3')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CacheSink_Lookup')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_1101_azsqldb",
+								"type": "DatasetReference"
+							},
+							"name": "empdb"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_inputemp_sample",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_1102_azsqldb",
+								"type": "DatasetReference"
+							},
+							"name": "citysource"
+						}
+					],
+					"sinks": [
+						{
+							"name": "CachedMaxEmpid"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sinkoutput2_csv",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						},
+						{
+							"name": "citycachesink"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						},
+						{
+							"name": "surrogateKey1"
+						},
+						{
+							"name": "derivedColumn1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          Max_empid as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     inferDriftedColumnTypes: true,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     query: 'select Max(empid) as Max_empid From empdb',",
+						"     format: 'query') ~> empdb",
+						"source(output(",
+						"          EmpID as short,",
+						"          EmpName as string,",
+						"          DeptID as short,",
+						"          Salary as short,",
+						"          Bonus as short,",
+						"          Gender as string,",
+						"          Country as string,",
+						"          City as string,",
+						"          DOJ as string,",
+						"          Company as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     inferDriftedColumnTypes: true,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source(output(",
+						"          citycode as string,",
+						"          cityname as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     inferDriftedColumnTypes: true,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> citysource",
+						"source1 select(mapColumn(",
+						"          EmpName,",
+						"          DeptID,",
+						"          Salary,",
+						"          Bonus,",
+						"          Gender,",
+						"          City,",
+						"          DOJ,",
+						"          Company",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 keyGenerate(output(EmpKey as long),",
+						"     startAt: 1L,",
+						"     stepValue: 1L) ~> surrogateKey1",
+						"surrogateKey1 derive(emp_idfromkey = CachedMaxEmpid#output().Max_empid +EmpKey,",
+						"          Cityname = citycachesink#lookup(City).cityname) ~> derivedColumn1",
+						"empdb sink(validateSchema: false,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     store: 'cache',",
+						"     format: 'inline',",
+						"     output: false,",
+						"     saveOrder: 1,",
+						"     mapColumn(",
+						"          Max_empid",
+						"     )) ~> CachedMaxEmpid",
+						"derivedColumn1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:['cachesinkOutput_Load_adlsgen2.csv'],",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          EmpKey,",
+						"          emp_idfromkey,",
+						"          EmpName,",
+						"          DeptID,",
+						"          Salary,",
+						"          Bonus,",
+						"          Gender,",
+						"          City,",
+						"          Cityname,",
+						"          DOJ,",
+						"          Company",
+						"     ),",
+						"     partitionBy('hash', 1)) ~> sink1",
+						"citysource sink(validateSchema: false,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     keys:['citycode'],",
+						"     store: 'cache',",
+						"     format: 'inline',",
+						"     output: false,",
+						"     saveOrder: 1,",
+						"     mapColumn(",
+						"          citycode,",
+						"          cityname",
+						"     )) ~> citycachesink"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_sinkoutput2_csv')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CacheSink_Lookup_Loadsqldb')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_1101_azsqldb",
+								"type": "DatasetReference"
+							},
+							"name": "empdb"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_inputemp_sample",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_1102_azsqldb",
+								"type": "DatasetReference"
+							},
+							"name": "citysource"
+						}
+					],
+					"sinks": [
+						{
+							"name": "CachedMaxEmpid"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_1101_azsqldb",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						},
+						{
+							"name": "citycachesink"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						},
+						{
+							"name": "surrogateKey1"
+						},
+						{
+							"name": "derivedColumn1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          Max_empid as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     inferDriftedColumnTypes: true,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     query: 'select Max(empid) as Max_empid From empdb',",
+						"     format: 'query') ~> empdb",
+						"source(output(",
+						"          EmpID as short,",
+						"          EmpName as string,",
+						"          DeptID as short,",
+						"          Salary as short,",
+						"          Bonus as short,",
+						"          Gender as string,",
+						"          Country as string,",
+						"          City as string,",
+						"          DOJ as string,",
+						"          Company as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     inferDriftedColumnTypes: true,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source(output(",
+						"          citycode as string,",
+						"          cityname as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     inferDriftedColumnTypes: true,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> citysource",
+						"source1 select(mapColumn(",
+						"          EmpName,",
+						"          DeptID,",
+						"          Salary,",
+						"          Bonus,",
+						"          Gender,",
+						"          Country,",
+						"          City,",
+						"          DOJ,",
+						"          Company",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 keyGenerate(output(EmpKey as long),",
+						"     startAt: 1L,",
+						"     stepValue: 1L) ~> surrogateKey1",
+						"surrogateKey1 derive(emp_idfromkey = CachedMaxEmpid#output().Max_empid +EmpKey,",
+						"          Cityname = citycachesink#lookup(City).cityname) ~> derivedColumn1",
+						"empdb sink(validateSchema: false,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     store: 'cache',",
+						"     format: 'inline',",
+						"     output: false,",
+						"     saveOrder: 1,",
+						"     mapColumn(",
+						"          Max_empid",
+						"     )) ~> CachedMaxEmpid",
+						"derivedColumn1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          empid = emp_idfromkey,",
+						"          empname = EmpName,",
+						"          deptid = DeptID,",
+						"          Sal = Salary,",
+						"          Bonus,",
+						"          Gender,",
+						"          Country,",
+						"          City = Cityname,",
+						"          DOJ,",
+						"          Company",
+						"     ),",
+						"     partitionBy('hash', 1),",
+						"     preCommands: [],",
+						"     postCommands: []) ~> sink1",
+						"citysource sink(validateSchema: false,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     keys:['citycode'],",
+						"     store: 'cache',",
+						"     format: 'inline',",
+						"     output: false,",
+						"     saveOrder: 1,",
+						"     mapColumn(",
+						"          citycode,",
+						"          cityname",
+						"     )) ~> citycachesink"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CacheSink_to_Activity_Output')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_inputemp_sample",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"name": "CacheSinktoactivityOutput"
+						}
+					],
+					"transformations": [
+						{
+							"name": "aggregate1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          EmpID as short,",
+						"          EmpName as string,",
+						"          DeptID as short,",
+						"          Salary as short,",
+						"          Bonus as short,",
+						"          Gender as string,",
+						"          Country as string,",
+						"          City as string,",
+						"          DOJ as string,",
+						"          Company as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     inferDriftedColumnTypes: true,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source1 aggregate(Max_Sal = max(Salary)) ~> aggregate1",
+						"aggregate1 sink(validateSchema: false,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     store: 'cache',",
+						"     format: 'inline',",
+						"     output: true,",
+						"     saveOrder: 1,",
+						"     mapColumn(",
+						"          Max_Sal",
+						"     )) ~> CacheSinktoactivityOutput"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Cast')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_cast_emp",
+								"type": "DatasetReference"
+							},
+							"name": "empcast"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_sinkoutput3",
+								"type": "DatasetReference"
+							},
+							"name": "GoodRecords"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sinkoutput3",
+								"type": "DatasetReference"
+							},
+							"name": "BadRecords"
+						}
+					],
+					"transformations": [
+						{
+							"name": "cast1"
+						},
+						{
+							"name": "split1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          EmpID as short,",
+						"          EmpName as string,",
+						"          DeptID as short,",
+						"          Salary as short,",
+						"          Bonus as short,",
+						"          Gender as string,",
+						"          DOJ as string,",
+						"          Company as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     inferDriftedColumnTypes: true,",
+						"     ignoreNoFilesFound: false) ~> empcast",
+						"empcast cast(output(",
+						"          Salary as integer,",
+						"          Bonus as integer,",
+						"          DOJ as date 'MM/dd/yyyy',",
+						"          Company as string",
+						"     ),",
+						"     errors: true) ~> cast1",
+						"cast1 split(!isError(),",
+						"     disjoint: false) ~> split1@(GoodRecords, BadRecords)",
+						"split1@GoodRecords sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          DeptID as string,",
+						"          DeptName as string",
+						"     ),",
+						"     partitionFileNames:['GoodRecords_Cast_Output.csv'],",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> GoodRecords",
+						"split1@BadRecords sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          DeptID as string,",
+						"          DeptName as string",
+						"     ),",
+						"     partitionFileNames:['BadRecords_Cast_Output.csv'],",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> BadRecords"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_sinkoutput3')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Conditional_split')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_inputemp_sample",
+								"type": "DatasetReference"
+							},
+							"name": "emp"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_sinkoutput_csv",
+								"type": "DatasetReference"
+							},
+							"name": "Salesemployees"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sinkoutput_csv",
+								"type": "DatasetReference"
+							},
+							"name": "Accountemployees"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sinkoutput_csv",
+								"type": "DatasetReference"
+							},
+							"name": "RandDemployees"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sinkoutput_csv",
+								"type": "DatasetReference"
+							},
+							"name": "Technicalemployees"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sinkoutput_csv",
+								"type": "DatasetReference"
+							},
+							"name": "Marketingemployees"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_sinkoutput_csv",
+								"type": "DatasetReference"
+							},
+							"name": "Otheremployees",
+							"description": "Security,Finance etc"
+						}
+					],
+					"transformations": [
+						{
+							"name": "Conditionalsplit"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          EmpID as short,",
+						"          EmpName as string,",
+						"          DeptID as short,",
+						"          Salary as short,",
+						"          Bonus as short,",
+						"          Gender as string,",
+						"          Country as string,",
+						"          City as string,",
+						"          DOJ as string,",
+						"          Company as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     inferDriftedColumnTypes: true,",
+						"     ignoreNoFilesFound: false,",
+						"     dateFormats: ['MM-dd-yyyy'],",
+						"     timestampFormats: ['MM-dd-yyyy HH:mm:ss']) ~> emp",
+						"emp split(DeptID ==10,",
+						"     DeptID==20,",
+						"     DeptID==30,",
+						"     DeptID==40,",
+						"     DeptID==50,",
+						"     disjoint: false) ~> Conditionalsplit@(Salesemp, Accountsemp, Marketingemp, Technicalemp, RandDemp, Otheremp)",
+						"Conditionalsplit@Salesemp sink(allowSchemaDrift: true,",
+						"     validateSchema: true,",
+						"     partitionFileNames:['salesemployee.csv'],",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          EmpID,",
+						"          EmpName,",
+						"          DeptID,",
+						"          Salary,",
+						"          Bonus,",
+						"          Gender,",
+						"          Country,",
+						"          City,",
+						"          DOJ,",
+						"          Company",
+						"     ),",
+						"     partitionBy('hash', 1)) ~> Salesemployees",
+						"Conditionalsplit@Accountsemp sink(allowSchemaDrift: true,",
+						"     validateSchema: true,",
+						"     partitionFileNames:['accountemployees.csv'],",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> Accountemployees",
+						"Conditionalsplit@RandDemp sink(allowSchemaDrift: true,",
+						"     validateSchema: true,",
+						"     partitionFileNames:['R&Demployees.csv'],",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> RandDemployees",
+						"Conditionalsplit@Technicalemp sink(allowSchemaDrift: true,",
+						"     validateSchema: true,",
+						"     partitionFileNames:['Technicalemployees.csv'],",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> Technicalemployees",
+						"Conditionalsplit@Marketingemp sink(allowSchemaDrift: true,",
+						"     validateSchema: true,",
+						"     partitionFileNames:['Marketingemployees.csv'],",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> Marketingemployees",
+						"Conditionalsplit@Otheremp sink(allowSchemaDrift: true,",
+						"     validateSchema: true,",
+						"     partitionFileNames:['Otheremployees.csv'],",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> Otheremployees"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_sinkoutput_csv')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FlattenRow')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_flattenrow_inputjson",
+								"type": "DatasetReference"
+							},
+							"name": "employeejson"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_outputjson",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "flatten1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          Emp_details as (Address as (Country as string, State as string, Zipcode as integer), Contact as (Email as string, Phone as long), Skills as string[], id as short, name as string)[]",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     inferDriftedColumnTypes: true,",
+						"     ignoreNoFilesFound: false,",
+						"     documentForm: 'singleDocument') ~> employeejson",
+						"employeejson foldDown(unroll(Emp_details.Skills),",
+						"     mapColumn(",
+						"          id = Emp_details.id,",
+						"          name = Emp_details.name,",
+						"          Skills = Emp_details.Skills,",
+						"          Address = Emp_details.Address,",
+						"          Contact = Emp_details.Contact",
+						"     ),",
+						"     skipDuplicateMapInputs: false,",
+						"     skipDuplicateMapOutputs: false) ~> flatten1",
+						"flatten1 sink(allowSchemaDrift: true,",
+						"     validateSchema: true,",
+						"     partitionFileNames:['FlattenRow_Output.json'],",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FuzzyJoin')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_fuzzyemp1",
+								"type": "DatasetReference"
+							},
+							"name": "emp1"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_fuzzyemp2",
+								"type": "DatasetReference"
+							},
+							"name": "emp2"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_sinkoutput3",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "FuzzyJoin"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          EmpID as short,",
+						"          EmpName as string,",
+						"          Salary as short,",
+						"          Gender as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> emp1",
+						"source(output(",
+						"          id as short,",
+						"          name as string,",
+						"          sal as short,",
+						"          gender as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     inferDriftedColumnTypes: true,",
+						"     ignoreNoFilesFound: false) ~> emp2",
+						"emp1, emp2 join(fuzzyCompare(EmpName, name, 67.00),",
+						"     joinType:'inner',",
+						"     matchType:'fuzzy',",
+						"     ignoreSpaces: true,",
+						"     scoreColumn:'Similarity_level',",
+						"     broadcast: 'off')~> FuzzyJoin",
+						"FuzzyJoin sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          DeptID as string,",
+						"          DeptName as string",
+						"     ),",
+						"     partitionFileNames:['FuzzyJoin_output.csv'],",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_sinkoutput3')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Lookup')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Lookup=LeftOuterJoin",
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_inputemp_sample",
+								"type": "DatasetReference"
+							},
+							"name": "emp"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_inputdept_sample",
+								"type": "DatasetReference"
+							},
+							"name": "dept"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_sinkoutput_csv",
+								"type": "DatasetReference"
+							},
+							"name": "LookupOutput"
+						}
+					],
+					"transformations": [
+						{
+							"name": "lookup1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          EmpID as short,",
+						"          EmpName as string,",
+						"          DeptID as short,",
+						"          Salary as short,",
+						"          Bonus as short,",
+						"          Gender as string,",
+						"          Country as string,",
+						"          City as string,",
+						"          DOJ as string,",
+						"          Company as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     inferDriftedColumnTypes: true,",
+						"     ignoreNoFilesFound: false) ~> emp",
+						"source(output(",
+						"          DeptID as short,",
+						"          DeptName as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     inferDriftedColumnTypes: true,",
+						"     ignoreNoFilesFound: false) ~> dept",
+						"emp, dept lookup(emp@DeptID == dept@DeptID,",
+						"     multiple: true,",
+						"     broadcast: 'auto')~> lookup1",
+						"lookup1 sink(allowSchemaDrift: true,",
+						"     validateSchema: true,",
+						"     partitionFileNames:['LookupOutput.csv'],",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     dateFormat:'MM/dd/yyyy',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          EmpID,",
+						"          EmpName,",
+						"          DeptID = emp@DeptID,",
+						"          DeptID2 = dept@DeptID,",
+						"          DeptName,",
+						"          Salary,",
+						"          Bonus,",
+						"          Gender,",
+						"          Country,",
+						"          City,",
+						"          DOJ,",
+						"          Company",
+						"     ),",
+						"     partitionBy('hash', 1)) ~> LookupOutput"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_sinkoutput_csv')]"
+			]
+		}
+	]
+}
