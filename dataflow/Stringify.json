@@ -1,0 +1,63 @@
+{
+	"name": "Stringify",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_jsoninput_1108",
+						"type": "DatasetReference"
+					},
+					"name": "empjsonsrc"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_outputjson",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "stringify1"
+				},
+				{
+					"name": "derivedColumn1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Emp_details as (id as string, name as string, Skills as string[], Address as (State as string, Country as string, Zipcode as string), Contact as (Phone as string, Email as string))[]",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     inferDriftedColumnTypes: true,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'singleDocument') ~> empjsonsrc",
+				"empjsonsrc stringify(AddressStringify = Emp_details.Address ? string,",
+				"          ContactStringify = Emp_details.Contact ? string,",
+				"     format: 'json') ~> stringify1",
+				"stringify1 derive(address = toString(AddressStringify),",
+				"          contact = toString(ContactStringify)) ~> derivedColumn1",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['stringify_output.json'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          Emp_details,",
+				"          AddressStringify,",
+				"          ContactStringify",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}

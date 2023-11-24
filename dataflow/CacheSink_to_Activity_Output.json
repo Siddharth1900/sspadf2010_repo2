@@ -1,0 +1,56 @@
+{
+	"name": "CacheSink_to_Activity_Output",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_inputemp_sample",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"name": "CacheSinktoactivityOutput"
+				}
+			],
+			"transformations": [
+				{
+					"name": "aggregate1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          EmpID as short,",
+				"          EmpName as string,",
+				"          DeptID as short,",
+				"          Salary as short,",
+				"          Bonus as short,",
+				"          Gender as string,",
+				"          Country as string,",
+				"          City as string,",
+				"          DOJ as string,",
+				"          Company as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     inferDriftedColumnTypes: true,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source1 aggregate(Max_Sal = max(Salary)) ~> aggregate1",
+				"aggregate1 sink(validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     store: 'cache',",
+				"     format: 'inline',",
+				"     output: true,",
+				"     saveOrder: 1,",
+				"     mapColumn(",
+				"          Max_Sal",
+				"     )) ~> CacheSinktoactivityOutput"
+			]
+		}
+	}
+}

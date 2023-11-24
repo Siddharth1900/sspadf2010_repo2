@@ -1,0 +1,17 @@
+{
+	"name": "sspadf2010",
+	"properties": {
+		"globalParameters": {
+			"Rootpath_gp": {
+				"type": "string",
+				"value": "testinput/Test1111/dir1/dirnested1"
+			}
+		}
+	},
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "7fcb8ae4-1904-4143-9c4c-c44700d1fe34",
+		"tenantId": "fedd5153-125a-400a-a3cc-a626800d92ab"
+	}
+}

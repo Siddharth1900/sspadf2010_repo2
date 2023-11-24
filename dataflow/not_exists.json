@@ -1,0 +1,87 @@
+{
+	"name": "not_exists",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_inputemp_sample",
+						"type": "DatasetReference"
+					},
+					"name": "emp"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_inputdept_sample",
+						"type": "DatasetReference"
+					},
+					"name": "dept"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_sinkoutput_csv",
+						"type": "DatasetReference"
+					},
+					"name": "Notexistsoutput"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Notexists"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          EmpID as short,",
+				"          EmpName as string,",
+				"          DeptID as short,",
+				"          Salary as short,",
+				"          Bonus as short,",
+				"          Gender as string,",
+				"          Country as string,",
+				"          City as string,",
+				"          DOJ as string,",
+				"          Company as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> emp",
+				"source(output(",
+				"          DeptID as short,",
+				"          DeptName as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     inferDriftedColumnTypes: true,",
+				"     ignoreNoFilesFound: false) ~> dept",
+				"emp, dept exists(emp@DeptID == dept@DeptID,",
+				"     negate:true,",
+				"     broadcast: 'auto')~> Notexists",
+				"Notexists sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['NotExists_output.csv'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          EmpID,",
+				"          EmpName,",
+				"          DeptID,",
+				"          Salary,",
+				"          Bonus,",
+				"          Gender,",
+				"          Country,",
+				"          City,",
+				"          DOJ,",
+				"          Company",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> Notexistsoutput"
+			]
+		}
+	}
+}

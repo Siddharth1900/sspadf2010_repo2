@@ -1,0 +1,35 @@
+{
+	"name": "ds_azuresqldb1105",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_1101_azsqldb",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "empid",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "empname",
+				"type": "varchar"
+			},
+			{
+				"name": "Skills",
+				"type": "varchar"
+			},
+			{
+				"name": "emp_address",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "emptbl"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

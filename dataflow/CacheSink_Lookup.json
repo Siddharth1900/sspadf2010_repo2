@@ -1,0 +1,154 @@
+{
+	"name": "CacheSink_Lookup",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_1101_azsqldb",
+						"type": "DatasetReference"
+					},
+					"name": "empdb"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_inputemp_sample",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_1102_azsqldb",
+						"type": "DatasetReference"
+					},
+					"name": "citysource"
+				}
+			],
+			"sinks": [
+				{
+					"name": "CachedMaxEmpid"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_sinkoutput2_csv",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				},
+				{
+					"name": "citycachesink"
+				}
+			],
+			"transformations": [
+				{
+					"name": "select1"
+				},
+				{
+					"name": "surrogateKey1"
+				},
+				{
+					"name": "derivedColumn1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Max_empid as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     inferDriftedColumnTypes: true,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'select Max(empid) as Max_empid From empdb',",
+				"     format: 'query') ~> empdb",
+				"source(output(",
+				"          EmpID as short,",
+				"          EmpName as string,",
+				"          DeptID as short,",
+				"          Salary as short,",
+				"          Bonus as short,",
+				"          Gender as string,",
+				"          Country as string,",
+				"          City as string,",
+				"          DOJ as string,",
+				"          Company as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     inferDriftedColumnTypes: true,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source(output(",
+				"          citycode as string,",
+				"          cityname as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     inferDriftedColumnTypes: true,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> citysource",
+				"source1 select(mapColumn(",
+				"          EmpName,",
+				"          DeptID,",
+				"          Salary,",
+				"          Bonus,",
+				"          Gender,",
+				"          City,",
+				"          DOJ,",
+				"          Company",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 keyGenerate(output(EmpKey as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateKey1",
+				"surrogateKey1 derive(emp_idfromkey = CachedMaxEmpid#output().Max_empid +EmpKey,",
+				"          Cityname = citycachesink#lookup(City).cityname) ~> derivedColumn1",
+				"empdb sink(validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     store: 'cache',",
+				"     format: 'inline',",
+				"     output: false,",
+				"     saveOrder: 1,",
+				"     mapColumn(",
+				"          Max_empid",
+				"     )) ~> CachedMaxEmpid",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['cachesinkOutput_Load_adlsgen2.csv'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          EmpKey,",
+				"          emp_idfromkey,",
+				"          EmpName,",
+				"          DeptID,",
+				"          Salary,",
+				"          Bonus,",
+				"          Gender,",
+				"          City,",
+				"          Cityname,",
+				"          DOJ,",
+				"          Company",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> sink1",
+				"citysource sink(validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     keys:['citycode'],",
+				"     store: 'cache',",
+				"     format: 'inline',",
+				"     output: false,",
+				"     saveOrder: 1,",
+				"     mapColumn(",
+				"          citycode,",
+				"          cityname",
+				"     )) ~> citycachesink"
+			]
+		}
+	}
+}

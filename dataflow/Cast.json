@@ -1,0 +1,92 @@
+{
+	"name": "Cast",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_cast_emp",
+						"type": "DatasetReference"
+					},
+					"name": "empcast"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_sinkoutput3",
+						"type": "DatasetReference"
+					},
+					"name": "GoodRecords"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_sinkoutput3",
+						"type": "DatasetReference"
+					},
+					"name": "BadRecords"
+				}
+			],
+			"transformations": [
+				{
+					"name": "cast1"
+				},
+				{
+					"name": "split1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          EmpID as short,",
+				"          EmpName as string,",
+				"          DeptID as short,",
+				"          Salary as short,",
+				"          Bonus as short,",
+				"          Gender as string,",
+				"          DOJ as string,",
+				"          Company as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     inferDriftedColumnTypes: true,",
+				"     ignoreNoFilesFound: false) ~> empcast",
+				"empcast cast(output(",
+				"          Salary as integer,",
+				"          Bonus as integer,",
+				"          DOJ as date 'MM/dd/yyyy',",
+				"          Company as string",
+				"     ),",
+				"     errors: true) ~> cast1",
+				"cast1 split(!isError(),",
+				"     disjoint: false) ~> split1@(GoodRecords, BadRecords)",
+				"split1@GoodRecords sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          DeptID as string,",
+				"          DeptName as string",
+				"     ),",
+				"     partitionFileNames:['GoodRecords_Cast_Output.csv'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> GoodRecords",
+				"split1@BadRecords sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          DeptID as string,",
+				"          DeptName as string",
+				"     ),",
+				"     partitionFileNames:['BadRecords_Cast_Output.csv'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> BadRecords"
+			]
+		}
+	}
+}

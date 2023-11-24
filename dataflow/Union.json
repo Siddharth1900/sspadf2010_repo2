@@ -1,0 +1,117 @@
+{
+	"name": "Union",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_marketingempcsv",
+						"type": "DatasetReference"
+					},
+					"name": "Marketingemp"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_accountempcsv",
+						"type": "DatasetReference"
+					},
+					"name": "accountemp"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_salesempcsv",
+						"type": "DatasetReference"
+					},
+					"name": "salesemp"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_sinkoutput_csv",
+						"type": "DatasetReference"
+					},
+					"name": "accountmarketingsalesemployees"
+				}
+			],
+			"transformations": [
+				{
+					"name": "marketingaccountsalesemployees"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          EmpID as short,",
+				"          EmpName as string,",
+				"          DeptID as short,",
+				"          Salary as short,",
+				"          Bonus as short,",
+				"          Gender as string,",
+				"          Country as string,",
+				"          City as string,",
+				"          DOJ as string,",
+				"          Company as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     inferDriftedColumnTypes: true,",
+				"     ignoreNoFilesFound: false) ~> Marketingemp",
+				"source(output(",
+				"          EmpID as short,",
+				"          EmpName as string,",
+				"          DeptID as short,",
+				"          Salary as short,",
+				"          Bonus as short,",
+				"          Gender as string,",
+				"          Country as string,",
+				"          City as string,",
+				"          DOJ as string,",
+				"          Company as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     inferDriftedColumnTypes: true,",
+				"     ignoreNoFilesFound: false) ~> accountemp",
+				"source(output(",
+				"          EmpID as short,",
+				"          EmpName as string,",
+				"          DeptID as short,",
+				"          Salary as short,",
+				"          Bonus as short,",
+				"          Gender as string,",
+				"          Country as string,",
+				"          City as string,",
+				"          DOJ as string,",
+				"          Company as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     inferDriftedColumnTypes: true,",
+				"     ignoreNoFilesFound: false) ~> salesemp",
+				"accountemp, Marketingemp, salesemp union(byName: true)~> marketingaccountsalesemployees",
+				"marketingaccountsalesemployees sink(allowSchemaDrift: true,",
+				"     validateSchema: true,",
+				"     partitionFileNames:['Unionoutput(accountmarketingsales_emp).csv'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          EmpID,",
+				"          EmpName,",
+				"          DeptID,",
+				"          Salary,",
+				"          Bonus,",
+				"          Gender,",
+				"          Country,",
+				"          City,",
+				"          DOJ,",
+				"          Company",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> accountmarketingsalesemployees"
+			]
+		}
+	}
+}

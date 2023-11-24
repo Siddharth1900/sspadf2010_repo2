@@ -1,0 +1,17 @@
+{
+	"name": "ds_1102_azsqldb",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_1101_azsqldb",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "city_tbl"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

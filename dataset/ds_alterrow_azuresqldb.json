@@ -1,0 +1,62 @@
+{
+	"name": "ds_alterrow_azuresqldb",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_AzureSqlDb_alterrow",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "EmpID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "EmpName",
+				"type": "varchar"
+			},
+			{
+				"name": "DeptID",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "Salary",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "Bonus",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "Gender",
+				"type": "varchar"
+			},
+			{
+				"name": "Country",
+				"type": "varchar"
+			},
+			{
+				"name": "City",
+				"type": "varchar"
+			},
+			{
+				"name": "DOJ",
+				"type": "date"
+			},
+			{
+				"name": "Company",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "emp_db"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

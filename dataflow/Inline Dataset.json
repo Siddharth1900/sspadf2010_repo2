@@ -1,0 +1,74 @@
+{
+	"name": "Inline Dataset",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "ls_adlsgen2410",
+						"type": "LinkedServiceReference"
+					},
+					"name": "EmpSrc"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "ls_adlsgen2_2510",
+						"type": "LinkedServiceReference"
+					},
+					"name": "InlineSink"
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          CustomerID as long,",
+				"          CustomerName as string,",
+				"          Location as string,",
+				"          Salary as long,",
+				"          Deptid as long",
+				"     ),",
+				"     useSchema: false,",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     inferDriftedColumnTypes: true,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'delimited',",
+				"     fileSystem: 'testinput',",
+				"     folderPath: 'Test1111/dir1',",
+				"     fileName: 'Customers.csv',",
+				"     columnDelimiter: ',',",
+				"     escapeChar: '\\\\',",
+				"     quoteChar: '\\\"',",
+				"     columnNamesAsHeader: true,",
+				"     dateFormats: ['MM/dd/yyyy'],",
+				"     preferredIntegralType: 'short',",
+				"     preferredFractionalType: 'double',",
+				"     booleanFormat: ['True', 'False']) ~> EmpSrc",
+				"EmpSrc sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'delimited',",
+				"     fileSystem: 'output3010container',",
+				"     folderPath: 'cust.csv',",
+				"     columnDelimiter: ',',",
+				"     escapeChar: '\\\\',",
+				"     quoteChar: '\\\"',",
+				"     columnNamesAsHeader: true,",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          CustomerID,",
+				"          CustomerName,",
+				"          Location,",
+				"          Salary,",
+				"          Deptid",
+				"     )) ~> InlineSink"
+			]
+		}
+	}
+}

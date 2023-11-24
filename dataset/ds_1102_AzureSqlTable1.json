@@ -1,0 +1,36 @@
+{
+	"name": "ds_1102_AzureSqlTable1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_1101_azsqldb",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "empid",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "empname",
+				"type": "varchar"
+			},
+			{
+				"name": "sal",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "loc",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "emp11"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

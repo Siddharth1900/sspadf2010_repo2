@@ -1,0 +1,68 @@
+{
+	"name": "pl_df1",
+	"properties": {
+		"activities": [
+			{
+				"name": "Data flow1",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "CacheSink_to_Activity_Output",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 16,
+						"computeType": "General"
+					},
+					"traceLevel": "None",
+					"cacheSinks": {
+						"firstRowOnly": true
+					}
+				}
+			},
+			{
+				"name": "Set variable1",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Data flow1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "Sal_Max",
+					"value": {
+						"value": "@activity('Data flow1').output.runStatus.output.CacheSinktoactivityOutput.value[0].Max_Sal",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"variables": {
+			"Sal_Max": {
+				"type": "Integer"
+			}
+		},
+		"annotations": [
+			"Dataflow"
+		],
+		"lastPublishTime": "2023-11-05T15:41:29Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,78 @@
+{
+	"name": "ParseTransformation",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_azuresqldb1105",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_jsonoutput3",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "ParseSkills"
+				},
+				{
+					"name": "ParseAddress"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          empid as integer,",
+				"          empname as string,",
+				"          Skills as string,",
+				"          emp_address as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     inferDriftedColumnTypes: true,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source1",
+				"source1 parse(ParseSkills = Skills ? (skill1 as string,",
+				"          skill2 as string,",
+				"          skill3 as string),",
+				"     format: 'delimited',",
+				"     columnNamesAsHeader: false,",
+				"     columnDelimiter: '|',",
+				"     nullValue: '') ~> ParseSkills",
+				"ParseSkills parse(ParseAddress = emp_address ? (city as string,",
+				"          country as string,",
+				"          Zipcode as string),",
+				"     format: 'json',",
+				"     documentForm: 'singleDocument') ~> ParseAddress",
+				"ParseAddress sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['ParseSkills_Address_Output.json'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          empid,",
+				"          empname,",
+				"          Skill1 = ParseSkills.skill1,",
+				"          Skill2 = ParseSkills.skill2,",
+				"          Skill3 = ParseSkills.skill3,",
+				"          City = ParseAddress.city,",
+				"          Country = ParseAddress.country,",
+				"          Zipcode = ParseAddress.Zipcode",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}

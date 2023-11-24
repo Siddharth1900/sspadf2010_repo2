@@ -1,0 +1,50 @@
+{
+	"name": "pl_PowerQuery1",
+	"properties": {
+		"activities": [
+			{
+				"name": "Power Query1",
+				"type": "ExecuteWranglingDataflow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "pq1_GroupBy",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"queries": [
+						{
+							"queryName": "UserQuery",
+							"dataflowSinks": [
+								{
+									"name": "UserQuerydssinkoutput2csv",
+									"dataset": {
+										"referenceName": "ds_sinkoutput2_csv",
+										"type": "DatasetReference"
+									},
+									"script": "sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tumask: 0022,\n\tpreCommands: [],\n\tpostCommands: [],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> UserQuerydssinkoutput2csv"
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"annotations": [
+			"Power Query"
+		],
+		"lastPublishTime": "2023-10-28T17:40:26Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

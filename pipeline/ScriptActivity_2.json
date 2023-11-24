@@ -1,0 +1,60 @@
+{
+	"name": "ScriptActivity_2",
+	"properties": {
+		"activities": [
+			{
+				"name": "Script1",
+				"type": "Script",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "ls_1101_azsqldb",
+					"type": "LinkedServiceReference"
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"parameters": [
+								{
+									"name": "cityname",
+									"type": "String",
+									"value": "BLR",
+									"direction": "Input"
+								},
+								{
+									"name": "salvalue",
+									"type": "Int64",
+									"value": "1500",
+									"direction": "Input"
+								}
+							],
+							"type": "Query",
+							"text": "select * from [dbo].[emp_db] where City=@cityname and Salary>@salvalue"
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00",
+					"logSettings": {
+						"logDestination": "ExternalStore",
+						"logLocationSettings": {
+							"linkedServiceName": {
+								"referenceName": "AzureBlobStorage1",
+								"type": "LinkedServiceReference"
+							},
+							"path": "loginfo"
+						}
+					}
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2023-11-11T14:30:32Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,110 @@
+{
+	"name": "Assert",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_assertinputcsv",
+						"type": "DatasetReference"
+					},
+					"name": "empsrc"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_deptassertcsv_Input",
+						"type": "DatasetReference"
+					},
+					"name": "Deptsrc"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_sinkoutput3",
+						"type": "DatasetReference"
+					},
+					"name": "goodrecords"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_sinkoutput3",
+						"type": "DatasetReference"
+					},
+					"name": "badrecords"
+				}
+			],
+			"transformations": [
+				{
+					"name": "assert1"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "split1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          EmpID as short,",
+				"          EmpName as string,",
+				"          DeptID as short,",
+				"          Salary as short,",
+				"          Bonus as short,",
+				"          Gender as string,",
+				"          City as string,",
+				"          DOJ as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     inferDriftedColumnTypes: true,",
+				"     ignoreNoFilesFound: false) ~> empsrc",
+				"source(output(",
+				"          DeptID as short,",
+				"          DeptName as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     inferDriftedColumnTypes: true,",
+				"     ignoreNoFilesFound: false) ~> Deptsrc",
+				"empsrc, Deptsrc assert(expectTrue(!isNull(toDate(DOJ,'MM/dd/yyyy')), false, 'assert_DOJ', null, 'Checking DOJ Data type Format'),",
+				"     expectUnique(EmpID, false, 'assert_empid', null, 'Checking Unique EmpID'),",
+				"     expectExists(Deptsrc@DeptID == empsrc@DeptID, false, 'assert_deptExists', null, 'Checking DeptId on Both Tables'),",
+				"     expectTrue(!isNull(Bonus), false, 'assert_BonusEmpty', null, 'Checking bonus is null')) ~> assert1",
+				"assert1 derive(Is_ErrorRow = isError(),",
+				"          Is_IncorrectDeptRow = hasError('assert_deptExists'),",
+				"          asserterrormessage = assertErrorMessages()) ~> derivedColumn1",
+				"derivedColumn1 split(Is_ErrorRow==false(),",
+				"     disjoint: false) ~> split1@(GoodRecords, BadRecords)",
+				"split1@GoodRecords sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          DeptID as string,",
+				"          DeptName as string",
+				"     ),",
+				"     partitionFileNames:['Goodrecords_Assert.csv'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> goodrecords",
+				"split1@BadRecords sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          DeptID as string,",
+				"          DeptName as string",
+				"     ),",
+				"     partitionFileNames:['Badrecords_Assert.csv'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> badrecords"
+			]
+		}
+	}
+}

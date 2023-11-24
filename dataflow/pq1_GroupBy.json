@@ -1,0 +1,28 @@
+{
+	"name": "pq1_GroupBy",
+	"properties": {
+		"type": "WranglingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"name": "ds_inputemp_sample",
+					"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tignoreNoFilesFound: false) ~> ds_inputemp_sample",
+					"dataset": {
+						"referenceName": "ds_inputemp_sample",
+						"type": "DatasetReference"
+					}
+				},
+				{
+					"name": "ds_inputdept_sample",
+					"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tignoreNoFilesFound: false,\n\tpartitionBy('hash', 1)) ~> ds_inputdept_sample",
+					"dataset": {
+						"referenceName": "ds_inputdept_sample",
+						"type": "DatasetReference"
+					}
+				}
+			],
+			"script": "section Section1;\r\nshared ds_inputemp_sample = let AdfDoc = AzureStorage.DataLakeContents(\"https://sspadls2410.dfs.core.windows.net/input/emp_sample.csv\"),Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]), PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true]) in  PromotedHeaders;\r\nshared ds_inputdept_sample = let AdfDoc = AzureStorage.DataLakeContents(\"https://sspadls2410.dfs.core.windows.net/input/Dept_sample.csv\"),Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]), PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true]) in  PromotedHeaders;\r\nshared UserQuery = let Source = #\"ds_inputemp_sample\",\r\n  #\"Grouped rows\" = Table.Group(Source, {\"DeptID\"}, {{\"TotalEmpbyDept\", each Table.RowCount(_), Int64.Type}}),\r\n  #\"Sorted rows\" = Table.Sort(#\"Grouped rows\", {{\"DeptID\", Order.Descending}}) in #\"Sorted rows\";\r\n",
+			"documentLocale": "en-us"
+		}
+	}
+}

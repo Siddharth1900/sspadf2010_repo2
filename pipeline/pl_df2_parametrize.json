@@ -1,0 +1,47 @@
+{
+	"name": "pl_df2_parametrize",
+	"properties": {
+		"activities": [
+			{
+				"name": "Data flow1",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "Parametrizedataflow",
+						"type": "DataFlowReference",
+						"parameters": {
+							"dep_param": {
+								"value": "@pipeline().parameters.Pl_Dept_param",
+								"type": "Expression"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 16,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"parameters": {
+			"Pl_Dept_param": {
+				"type": "int"
+			}
+		},
+		"annotations": [
+			"Dataflow"
+		],
+		"lastPublishTime": "2023-10-28T17:40:26Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

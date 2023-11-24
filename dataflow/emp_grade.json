@@ -1,0 +1,15 @@
+{
+	"name": "emp_grade",
+	"properties": {
+		"description": "employee_grade",
+		"type": "UDFLibrary",
+		"typeProperties": {
+			"sources": [],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				"emp_grade(short) as string = iif(i1>=1500 && i1<=2500, 'Grade-B', 'Grade-A')"
+			]
+		}
+	}
+}

@@ -1,0 +1,62 @@
+{
+	"name": "UnPivot_1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_unpivot",
+						"type": "DatasetReference"
+					},
+					"name": "POvendor"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_sinkoutput2_csv",
+						"type": "DatasetReference"
+					},
+					"name": "UnPivotSink"
+				}
+			],
+			"transformations": [
+				{
+					"name": "unpivot1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          PO as short,",
+				"          Vendor as string,",
+				"          Apple as short,",
+				"          Pear as short,",
+				"          Orange as short,",
+				"          Mango as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     inferDriftedColumnTypes: true,",
+				"     ignoreNoFilesFound: false) ~> POvendor",
+				"POvendor unpivot(output(",
+				"          Fruits as string,",
+				"          Qty as short",
+				"     ),",
+				"     ungroupBy(PO,",
+				"          Vendor),",
+				"     lateral: false,",
+				"     ignoreNullPivots: false) ~> unpivot1",
+				"unpivot1 sink(allowSchemaDrift: true,",
+				"     validateSchema: true,",
+				"     partitionFileNames:['UnPivot_1_SinkOutput.csv'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> UnPivotSink"
+			]
+		}
+	}
+}

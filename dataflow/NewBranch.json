@@ -1,0 +1,116 @@
+{
+	"name": "NewBranch",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_inputemp_sample",
+						"type": "DatasetReference"
+					},
+					"name": "emp"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_inputdept_sample",
+						"type": "DatasetReference"
+					},
+					"name": "dept"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_sinkoutput2_csv",
+						"type": "DatasetReference"
+					},
+					"name": "joinsink"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_sinkoutput2_csv",
+						"type": "DatasetReference"
+					},
+					"name": "aggregatesink"
+				}
+			],
+			"transformations": [
+				{
+					"name": "aggregate1"
+				},
+				{
+					"name": "join1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          EmpID as short,",
+				"          EmpName as string,",
+				"          DeptID as short,",
+				"          Salary as short,",
+				"          Bonus as short,",
+				"          Gender as string,",
+				"          Country as string,",
+				"          City as string,",
+				"          DOJ as string,",
+				"          Company as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     inferDriftedColumnTypes: true,",
+				"     ignoreNoFilesFound: false) ~> emp",
+				"source(output(",
+				"          DeptID as short,",
+				"          DeptName as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     inferDriftedColumnTypes: true,",
+				"     ignoreNoFilesFound: false) ~> dept",
+				"emp aggregate(groupBy(DeptID),",
+				"     TotalEmployeesbyDeptID = count(EmpID)) ~> aggregate1",
+				"emp, dept join(emp@DeptID == dept@DeptID,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 sink(allowSchemaDrift: true,",
+				"     validateSchema: true,",
+				"     partitionFileNames:['JoinSinkOutput_fromNewBranch.csv'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          EmpID,",
+				"          EmpName,",
+				"          DeptID = emp@DeptID,",
+				"          DeptName,",
+				"          Salary,",
+				"          Bonus,",
+				"          Gender,",
+				"          Country,",
+				"          City,",
+				"          DOJ,",
+				"          Company",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> joinsink",
+				"aggregate1 sink(allowSchemaDrift: true,",
+				"     validateSchema: true,",
+				"     partitionFileNames:['AggregateSinkOutput_fromNewBranch.csv'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          DeptID,",
+				"          TotalEmployeesbyDeptID",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> aggregatesink"
+			]
+		}
+	}
+}

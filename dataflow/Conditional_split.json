@@ -1,0 +1,159 @@
+{
+	"name": "Conditional_split",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_inputemp_sample",
+						"type": "DatasetReference"
+					},
+					"name": "emp"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_sinkoutput_csv",
+						"type": "DatasetReference"
+					},
+					"name": "Salesemployees"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_sinkoutput_csv",
+						"type": "DatasetReference"
+					},
+					"name": "Accountemployees"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_sinkoutput_csv",
+						"type": "DatasetReference"
+					},
+					"name": "RandDemployees"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_sinkoutput_csv",
+						"type": "DatasetReference"
+					},
+					"name": "Technicalemployees"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_sinkoutput_csv",
+						"type": "DatasetReference"
+					},
+					"name": "Marketingemployees"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_sinkoutput_csv",
+						"type": "DatasetReference"
+					},
+					"name": "Otheremployees",
+					"description": "Security,Finance etc"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Conditionalsplit"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          EmpID as short,",
+				"          EmpName as string,",
+				"          DeptID as short,",
+				"          Salary as short,",
+				"          Bonus as short,",
+				"          Gender as string,",
+				"          Country as string,",
+				"          City as string,",
+				"          DOJ as string,",
+				"          Company as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     inferDriftedColumnTypes: true,",
+				"     ignoreNoFilesFound: false,",
+				"     dateFormats: ['MM-dd-yyyy'],",
+				"     timestampFormats: ['MM-dd-yyyy HH:mm:ss']) ~> emp",
+				"emp split(DeptID ==10,",
+				"     DeptID==20,",
+				"     DeptID==30,",
+				"     DeptID==40,",
+				"     DeptID==50,",
+				"     disjoint: false) ~> Conditionalsplit@(Salesemp, Accountsemp, Marketingemp, Technicalemp, RandDemp, Otheremp)",
+				"Conditionalsplit@Salesemp sink(allowSchemaDrift: true,",
+				"     validateSchema: true,",
+				"     partitionFileNames:['salesemployee.csv'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          EmpID,",
+				"          EmpName,",
+				"          DeptID,",
+				"          Salary,",
+				"          Bonus,",
+				"          Gender,",
+				"          Country,",
+				"          City,",
+				"          DOJ,",
+				"          Company",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> Salesemployees",
+				"Conditionalsplit@Accountsemp sink(allowSchemaDrift: true,",
+				"     validateSchema: true,",
+				"     partitionFileNames:['accountemployees.csv'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> Accountemployees",
+				"Conditionalsplit@RandDemp sink(allowSchemaDrift: true,",
+				"     validateSchema: true,",
+				"     partitionFileNames:['R&Demployees.csv'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> RandDemployees",
+				"Conditionalsplit@Technicalemp sink(allowSchemaDrift: true,",
+				"     validateSchema: true,",
+				"     partitionFileNames:['Technicalemployees.csv'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> Technicalemployees",
+				"Conditionalsplit@Marketingemp sink(allowSchemaDrift: true,",
+				"     validateSchema: true,",
+				"     partitionFileNames:['Marketingemployees.csv'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> Marketingemployees",
+				"Conditionalsplit@Otheremp sink(allowSchemaDrift: true,",
+				"     validateSchema: true,",
+				"     partitionFileNames:['Otheremployees.csv'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> Otheremployees"
+			]
+		}
+	}
+}
