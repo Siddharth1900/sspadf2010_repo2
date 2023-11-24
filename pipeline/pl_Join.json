@@ -1,5 +1,5 @@
 {
-	"name": "pl_AlterRow",
+	"name": "pl_Join",
 	"properties": {
 		"activities": [
 			{
@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "AlterRow",
+						"referenceName": "join",
 						"type": "DataFlowReference"
 					},
 					"compute": {

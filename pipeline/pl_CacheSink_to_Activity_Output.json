@@ -1,5 +1,5 @@
 {
-	"name": "pl_AlterRow",
+	"name": "pl_CacheSink_to_Activity_Output",
 	"properties": {
 		"activities": [
 			{
@@ -16,14 +16,17 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "AlterRow",
+						"referenceName": "CacheSink_to_Activity_Output",
 						"type": "DataFlowReference"
 					},
 					"compute": {
 						"coreCount": 16,
 						"computeType": "General"
 					},
-					"traceLevel": "Coarse"
+					"traceLevel": "None",
+					"cacheSinks": {
+						"firstRowOnly": true
+					}
 				}
 			}
 		],

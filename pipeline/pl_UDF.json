@@ -1,5 +1,5 @@
 {
-	"name": "pl_AlterRow",
+	"name": "pl_UDF",
 	"properties": {
 		"activities": [
 			{
@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "AlterRow",
+						"referenceName": "UDF",
 						"type": "DataFlowReference"
 					},
 					"compute": {

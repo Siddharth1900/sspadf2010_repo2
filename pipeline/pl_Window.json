@@ -1,5 +1,5 @@
 {
-	"name": "pl_AlterRow",
+	"name": "pl_Window",
 	"properties": {
 		"activities": [
 			{
@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "AlterRow",
+						"referenceName": "window",
 						"type": "DataFlowReference"
 					},
 					"compute": {

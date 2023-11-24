@@ -1,5 +1,5 @@
 {
-	"name": "pl_AlterRow",
+	"name": "pl_Parametrizedataflow",
 	"properties": {
 		"activities": [
 			{
@@ -16,8 +16,11 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "AlterRow",
-						"type": "DataFlowReference"
+						"referenceName": "Parametrizedataflow",
+						"type": "DataFlowReference",
+						"parameters": {
+							"dep_param": "20"
+						}
 					},
 					"compute": {
 						"coreCount": 16,
